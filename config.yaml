@@ -92,23 +92,26 @@ sources:
     tools: [search_documents]
     covers: |
       Korean official documents (ko), national rules only: the 위기아동청년법 (law, effective 2026-03-26), its
-      시행령 (enforcement decree), and the Ministry of Health and Welfare press release of 2026-03-25 with its
-      attachments. Topics: who counts as a 가족돌봄 아동·청년 and the four eligibility conditions, age limits and the
-      military-service extension, 자기돌봄비 (amount, income rule, where to apply, how it is paid), case management
-      (사례관리) steps, 청년미래센터 roles, linked services (scholarship, housing, jobs), agencies by age, effective dates.
+      시행령 (enforcement decree) and 시행규칙 (enforcement rule), the Ministry of Health and Welfare notices
+      (자기돌봄비 지원 기준 고시, 돌봄대상가족의 범위 고시, 2026년 기준 중위소득 고시), and the ministry press release of
+      2026-03-25. Topics: who counts as a 가족돌봄 아동·청년 and the four eligibility conditions with their exceptions
+      (35세 이상 family member, different address), which sick or disabled relatives count as 돌봄대상가족, age limits
+      and the military-service extension, 자기돌봄비 (amount, how many times, income rule, where to apply, required
+      papers and forms, how the voucher is used), 2026 기준 중위소득 amounts by household size, case management
+      (사례관리) steps and papers, 청년미래센터 roles, linked services, agencies by age, effective dates.
       The section titles below are parts of this one source "docs", not separate sources:
       {document_outline}
     not_covers: |
-      Lists of application documents and forms; the won amount of 기준 중위소득; detailed criteria set by ministry
-      notices or ordinances; addresses, phone numbers and opening hours of any 청년미래센터; programs of a single city
-      or province (e.g. Seoul); university attendance, leave or scholarships of a specific school; job listings.
+      Addresses, phone numbers and opening hours of any 청년미래센터; which regions have a center; how income and assets
+      are calculated in detail; 기준 중위소득 for 2027 or later; programs of a single city or province (e.g. Seoul);
+      university attendance, leave or scholarships of a specific school; job listings.
   # 표 없음 (tasks/05: 해당 없음). 표를 추가하면 여기에 table 카드를 둡니다. 순서가 곧 우선순위입니다.
   web:
     label: 🌐 웹 · Web — 확인 필요 · please verify
     tools: [web_search]
     covers: |
-      Everything the documents do not cover: contact details and locations of 청년미래센터 and local offices, application
-      documents, the current 기준 중위소득 amounts, ministry notices (고시), local-government programs, latest announcements.
+      Everything the documents do not cover: contact details and locations of 청년미래센터 and local offices, which
+      regions have a center, local-government programs, latest announcements and changes after 2026-03.
       Official sites: law.go.kr (laws and notices), mohw.go.kr (ministry), korea.kr (policy briefings), bokjiro.go.kr (welfare portal).
       Less reliable; answers must cite URLs.
     not_covers: |
@@ -122,6 +125,10 @@ documents:
     law_20260326.pdf: ko             # 위기아동청년법 (법률 제20846호, 2026.3.26 시행)
     decree_20260326.pdf: ko          # 같은 법 시행령 (대통령령 제36215호, 2026.3.26 시행)
     mohw_press_20260326.pdf: ko      # 보건복지부 보도자료 (2026.3.25 배포)
+    rule_20260326.pdf: ko            # 같은 법 시행규칙 (보건복지부령 제1165호, 2026.3.26 시행)
+    notice_selfcare_2026-61.hwpx: ko       # 자기돌봄비 지원 기준 등에 관한 고시 (보건복지부고시 제2026-61호)
+    notice_carefamily_2026-60.pdf: ko      # 돌봄대상가족의 범위에 관한 고시 (보건복지부고시 제2026-60호)
+    notice_median_income_2025-135.hwpx: ko # 2026년 기준 중위소득 고시 (보건복지부고시 제2025-135호, 2026.1.1~12.31)
   # 예:
   # files:
   #   library_guide_2026.pdf: ko
@@ -131,11 +138,12 @@ documents:
   authoritative: ko    # 언어판끼리 내용이 다를 때 이기는 판. 한 언어뿐이면 그대로 두어도 됩니다.
   outline_langs: [ko]  # 라우터가 섹션 제목을 보는 언어판
   # search_documents 도구 설명은 아래 세 줄로 만들어집니다 (LLM이 읽음)
-  description: the official Korean documents on support for family-caregiving children and young people (위기아동청년법, its 시행령, and the 2026-03-25 Ministry of Health and Welfare press release; Korean only)
+  description: the official Korean documents on support for family-caregiving children and young people (위기아동청년법 and its 시행령 and 시행규칙, Ministry of Health and Welfare notices on 자기돌봄비, 돌봄대상가족 and the 2026 기준 중위소득, and the 2026-03-25 press release; Korean only)
   use_for: >
-    eligibility conditions, age limits and exceptions, 자기돌봄비 amount, income rule, application office and payment method,
-    case management steps, 청년미래센터 roles, linked services, which agency handles which age, effective dates of articles.
-  not_for: "contact details of centers, application forms, local-government programs, current 기준 중위소득 amounts (use web_search)."
+    eligibility conditions and their exceptions, which relatives count as 돌봄대상가족, age limits, 자기돌봄비 amount and
+    number of times, income rule and 2026 기준 중위소득 amounts, application office, required papers and forms, payment
+    method, case management steps, 청년미래센터 roles, linked services, which agency handles which age, effective dates.
+  not_for: "contact details and locations of centers, local-government programs, 기준 중위소득 for other years (use web_search)."
 
 chunking:
   max_chars: 900       # 이보다 긴 섹션은 줄 단위로 나눔 (섹션 경로는 유지)

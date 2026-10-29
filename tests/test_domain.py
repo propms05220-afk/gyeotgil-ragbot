@@ -42,6 +42,15 @@ def test_one_subsection_has_its_body():
     assert "시설급여" not in sec.text
 
 
+def test_notice_sections():
+    secs = _sections("notice_selfcare_2026-61")
+    sec = next(s for s in secs if s.path == ["자기돌봄비 지원 기준 등에 관한 고시", "제3조(자기돌봄비 이용권의 지원횟수 및 지급액)"])
+    assert "1회에 한하여 200만원" in sec.text
+    median = _sections("notice_median_income_2025-135")
+    table = next(s for s in median if s.kind == "table" and s.path[-1] == "1. 기준 중위소득")
+    assert "2,564,238" in table.text   # 2026년 1인가구 기준 중위소득 (원/월)
+
+
 def test_ocr_noise_dropped():
     for stem in ("law_20260326", "decree_20260326"):
         text = "\n".join(s.text for s in _sections(stem))
