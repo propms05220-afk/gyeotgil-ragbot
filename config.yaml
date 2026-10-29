@@ -22,6 +22,26 @@ chatbot:
   greeting: |
     안녕하세요. 가족을 돌보는 청년이 받을 수 있는 국가 지원(지원 대상, 자기돌봄비, 신청 방법)을 공식 자료로 안내해 드려요.
     궁금한 상황을 편하게 적어 주세요.
+  # 앱의 영어 화면 (사이드바 "언어 / Language" 에서 English 를 고를 때). 빈 칸은 위의 한국어 값을 씁니다.
+  translations:
+    en:
+      name: Gyeotgil Support Guide
+      about: |
+        This chatbot looks for answers in this order.
+        1. 📘 Official documents: the Act on Support for Children and Young People in Crisis, Including Family
+           Caregivers (위기아동청년법) and its Enforcement Decree (in force 2026-03-26), and the Ministry of Health
+           and Welfare press release (2026-03-25). All documents are in Korean.
+        2. 🌐 Official websites: law.go.kr, mohw.go.kr, korea.kr, bokjiro.go.kr
+
+        Answers may be wrong, and only 청년미래센터 (Youth Future Center) and your city/district office decide
+        whether you are eligible. For exact answers: Health and Welfare call center 129 (Korean).
+      greeting: |
+        Hello! I explain the national support that young people caring for a family member can get in Korea
+        (who is eligible, the self-care allowance, how to apply), using official documents.
+        Tell me about your situation in Korean or English.
+      examples:
+        - What kinds of support can young family caregivers get?
+        - What are the steps of case management?
   today: ""            # 비우면 실제 날짜. 평가를 재현하려면 고정, 예: "2026-11-02"
   # {name} 과 {today} 는 자동으로 채워집니다. 그 외의 중괄호는 쓰지 마세요.
   # 아래는 원본 프로젝트에서 효과가 확인된 규칙의 일반형에 이 챗봇의 규칙을 더한 것입니다 (docs/GOAL.md).
@@ -40,7 +60,9 @@ chatbot:
     A routing plan for each question is given below; start with its primary source.
 
     Rules:
-    - Answer in the same language as the user's question, in plain words a teenager can follow.
+    - Answer in the same language as the user's question (Korean or English), in plain words a teenager can follow.
+      The documents are Korean: in an English answer, translate the facts and keep the Korean name of each program,
+      office and law in parentheses the first time, e.g. "self-care allowance (자기돌봄비)".
     - Base every fact on tool results. Read each passage to the end: apply every condition, and every exception
       or proviso (for example sentences starting with "다만"), before you conclude. If a condition depends on facts
       the user did not give, say which fact decides it.
@@ -66,7 +88,7 @@ router:
 # label = 앱에서 이 소스를 쓴 답변에 붙는 배지.
 sources:
   docs:
-    label: 📘 문서
+    label: 📘 문서 · Documents
     tools: [search_documents]
     covers: |
       Korean official documents (ko), national rules only: the 위기아동청년법 (law, effective 2026-03-26), its
@@ -82,7 +104,7 @@ sources:
       or province (e.g. Seoul); university attendance, leave or scholarships of a specific school; job listings.
   # 표 없음 (tasks/05: 해당 없음). 표를 추가하면 여기에 table 카드를 둡니다. 순서가 곧 우선순위입니다.
   web:
-    label: 🌐 웹 — 확인 필요
+    label: 🌐 웹 · Web — 확인 필요 · please verify
     tools: [web_search]
     covers: |
       Everything the documents do not cover: contact details and locations of 청년미래센터 and local offices, application
