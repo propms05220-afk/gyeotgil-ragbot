@@ -1,0 +1,153 @@
+# ─────────────────────────────────────────────────────────────
+# 나의 챗봇이 자기 도메인에 대해 아는 모든 것을 "데이터"로 적는 파일입니다.
+# tasks/02, 04, 06 에서 채웠습니다 (2026-10-29). 완성된 예시: rag_chatbot_starter/config.yaml
+# 비밀 키와 모델 주소는 여기가 아니라 .env 에 둡니다.
+# documents, chunking, tables 를 바꾼 뒤에는 다시 빌드:  python -m ragbot build
+# ─────────────────────────────────────────────────────────────
+
+chatbot:
+  name: 곁길 지원제도 안내
+  purpose: 가족을 돌보는 13~34세 아동·청년(가족돌봄청년)에게 국가 지원 제도(지원대상 요건, 자기돌봄비, 사례관리, 신청 창구)를 공식 법령과 보건복지부 자료로 안내한다   # 라우터가 읽습니다
+  # 앱에 보이는 소개
+  about: |
+    이 챗봇은 다음 순서로 답을 찾습니다.
+    1. 📘 공식 문서: 「가족돌봄 등 위기아동ㆍ청년 지원에 관한 법률」과 시행령 (2026.3.26 시행), 보건복지부 보도자료 (2026.3.25)
+    2. 🌐 공식 웹사이트: 국가법령정보센터, 보건복지부, 정책브리핑, 복지로
+
+    답변이 틀릴 수 있고, 지원 대상인지는 청년미래센터와 거주지 구청이 최종 결정합니다.
+    정확한 안내: 보건복지상담센터 129 · 청년미래센터 · 거주지 시·군·구청
+  examples:            # 앱의 예시 질문. 골든 QA와 같은 질문은 넣지 마세요.
+    - 가족돌봄청년이 받을 수 있는 지원에는 어떤 것이 있나요?
+    - 사례관리는 어떤 순서로 진행되나요?
+  greeting: |
+    안녕하세요. 가족을 돌보는 청년이 받을 수 있는 국가 지원(지원 대상, 자기돌봄비, 신청 방법)을 공식 자료로 안내해 드려요.
+    궁금한 상황을 편하게 적어 주세요.
+  today: ""            # 비우면 실제 날짜. 평가를 재현하려면 고정, 예: "2026-11-02"
+  # {name} 과 {today} 는 자동으로 채워집니다. 그 외의 중괄호는 쓰지 마세요.
+  # 아래는 원본 프로젝트에서 효과가 확인된 규칙의 일반형에 이 챗봇의 규칙을 더한 것입니다 (docs/GOAL.md).
+  system_prompt: |
+    You are {name}, a helper for young people aged 13-34 in Korea who care for a sick or disabled family member
+    ("가족돌봄 아동·청년"). You explain which national support they may get and how to apply. Today is {today}.
+
+    You do NOT know Korean welfare law or programs from memory; your memory about them is often wrong or outdated
+    (the law changed on 2026-03-26). For any question about eligibility, benefits, amounts, agencies or procedures,
+    call a tool BEFORE answering. Only cite sources that a tool actually returned in this conversation.
+
+    Sources:
+    - search_documents: the 위기아동청년법 (law), its 시행령 (enforcement decree), and the Ministry of Health and
+      Welfare press release of 2026-03-25. Each passage comes with its section, e.g. "위기아동청년법 시행령 > 제11조(자기돌봄비)".
+    - web_search: official websites first, then others. Prefer the documents when they cover the question.
+    A routing plan for each question is given below; start with its primary source.
+
+    Rules:
+    - Answer in the same language as the user's question, in plain words a teenager can follow.
+    - Base every fact on tool results. Read each passage to the end: apply every condition, and every exception
+      or proviso (for example sentences starting with "다만"), before you conclude. If a condition depends on facts
+      the user did not give, say which fact decides it.
+    - Never give a final yes/no on eligibility. Say whether the user appears to meet each condition, and that the
+      final decision is made by 청년미래센터 (support target selection) or the 시·군·구청 (자기돌봄비).
+    - End the answer with sources including the section, e.g. [Source: gov ko p.2, 위기아동청년법 시행령 제11조] or
+      [Source: web https://...]. Mark web information as "from the web — please verify".
+    - Only national programs are covered. If a source describes a program of one city or province, say so and do not
+      mix it with the national program.
+    - If the primary source does not contain the answer, try the fallback sources (and web_search) before giving up.
+    - If no source answers the question, say you could not find it and suggest 보건복지상담센터 (129), 청년미래센터 or
+      the user's 시·군·구청. Do not guess.
+    - You are not a counselor. If the user mentions self-harm or wanting to die, first give 자살예방상담전화 109
+      (24 hours), then answer briefly.
+
+router:
+  enabled: true        # false = 라우팅 없이 에이전트가 모든 도구 중에서 스스로 고름
+  default_route: web   # 어떤 소스 카드도 분명히 다루지 않는 사실 질문일 때 고르는 소스
+
+# 소스 카드: 각 소스가 무엇을 담고 무엇을 담지 "않는지". 라우터는 이것만 보고 답이 있을 곳을 정합니다.
+# 소스 이름(docs, web …)이 골든 QA의 route 값이 됩니다. 가장 중요한 칸은 not_covers 입니다.
+# {document_outline} 에는 인덱스의 섹션 제목이 자동으로 들어갑니다.
+# label = 앱에서 이 소스를 쓴 답변에 붙는 배지.
+sources:
+  docs:
+    label: 📘 문서
+    tools: [search_documents]
+    covers: |
+      Korean official documents (ko), national rules only: the 위기아동청년법 (law, effective 2026-03-26), its
+      시행령 (enforcement decree), and the Ministry of Health and Welfare press release of 2026-03-25 with its
+      attachments. Topics: who counts as a 가족돌봄 아동·청년 and the four eligibility conditions, age limits and the
+      military-service extension, 자기돌봄비 (amount, income rule, where to apply, how it is paid), case management
+      (사례관리) steps, 청년미래센터 roles, linked services (scholarship, housing, jobs), agencies by age, effective dates.
+      The section titles below are parts of this one source "docs", not separate sources:
+      {document_outline}
+    not_covers: |
+      Lists of application documents and forms; the won amount of 기준 중위소득; detailed criteria set by ministry
+      notices or ordinances; addresses, phone numbers and opening hours of any 청년미래센터; programs of a single city
+      or province (e.g. Seoul); university attendance, leave or scholarships of a specific school; job listings.
+  # 표 없음 (tasks/05: 해당 없음). 표를 추가하면 여기에 table 카드를 둡니다. 순서가 곧 우선순위입니다.
+  web:
+    label: 🌐 웹 — 확인 필요
+    tools: [web_search]
+    covers: |
+      Everything the documents do not cover: contact details and locations of 청년미래센터 and local offices, application
+      documents, the current 기준 중위소득 amounts, ministry notices (고시), local-government programs, latest announcements.
+      Official sites: law.go.kr (laws and notices), mohw.go.kr (ministry), korea.kr (policy briefings), bokjiro.go.kr (welfare portal).
+      Less reliable; answers must cite URLs.
+    not_covers: |
+      Nothing in particular, but prefer the other sources when they cover the question.
+
+# 비정형 문서 (PDF, HWP, HWPX, DOCX …). kordoc 이 파싱하고 search_documents 가 검색합니다.
+documents:
+  dir: data/docs
+  # 파일 이름 → 그 문서의 언어 (ko | en | zh)
+  files:
+    law_20260326.pdf: ko             # 위기아동청년법 (법률 제20846호, 2026.3.26 시행)
+    decree_20260326.pdf: ko          # 같은 법 시행령 (대통령령 제36215호, 2026.3.26 시행)
+    mohw_press_20260326.pdf: ko      # 보건복지부 보도자료 (2026.3.25 배포)
+  # 예:
+  # files:
+  #   library_guide_2026.pdf: ko
+  #   library_guide_2026_en.pdf: en
+  ocr: true            # 이미지로 된 페이지가 있으면 필요. kordoc OCR은 로컬에서 실행됩니다.
+  citation: gov        # 출처 표기 이름: "gov ko p.12" 처럼 보입니다. 짧은 영문 한 단어 (예: guide)
+  authoritative: ko    # 언어판끼리 내용이 다를 때 이기는 판. 한 언어뿐이면 그대로 두어도 됩니다.
+  outline_langs: [ko]  # 라우터가 섹션 제목을 보는 언어판
+  # search_documents 도구 설명은 아래 세 줄로 만들어집니다 (LLM이 읽음)
+  description: the official Korean documents on support for family-caregiving children and young people (위기아동청년법, its 시행령, and the 2026-03-25 Ministry of Health and Welfare press release; Korean only)
+  use_for: >
+    eligibility conditions, age limits and exceptions, 자기돌봄비 amount, income rule, application office and payment method,
+    case management steps, 청년미래센터 roles, linked services, which agency handles which age, effective dates of articles.
+  not_for: "contact details of centers, application forms, local-government programs, current 기준 중위소득 amounts (use web_search)."
+
+chunking:
+  max_chars: 900       # 이보다 긴 섹션은 줄 단위로 나눔 (섹션 경로는 유지)
+  overlap_chars: 100
+  table_as_chunk: true # 문서 안의 표는 각각 하나의 청크로 (섹션 경로 포함)
+
+retrieval:
+  top_k: 5
+  use_rerank: true
+  candidates: 25
+  prefer_lang: true    # 질문 언어와 같은 언어판에 약간의 가산점
+
+# 정형 데이터 (tasks/05, 선택). src/ragbot/domain/tables.py 가 읽습니다.
+# 표가 없으면 이 블록을 주석으로 둔 채로 두세요.
+# tables:
+#   file: data/tables/support_programs.xlsx   (예정: 지원 제도 정리표)
+#   db: data/tables/support_programs.sqlite
+#   max_results: 15
+
+web:
+  # 먼저 검색하는 공식 사이트. 이 사이트에서 결과가 없을 때만 다른 사이트 결과를 쓰고, 비공식으로 표시합니다.
+  official_domains:
+    - law.go.kr        # 국가법령정보센터: 법령, 고시
+    - mohw.go.kr       # 보건복지부
+    - korea.kr         # 정책브리핑
+    - bokjiro.go.kr    # 복지로
+  max_results: 5
+
+agent:
+  max_steps: 8
+  # "아직 안 찾아본 소스를 찾아보라" 가드레일 메시지에 덧붙는 힌트 (선택)
+  search_hint: ""
+  tools:
+    - search_documents
+    - web_search
+    - get_today
+    - calculator

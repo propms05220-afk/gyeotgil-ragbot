@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ragbot-app",
+      "runtimeExecutable": "conda",
+      "runtimeArgs": ["run", "--no-capture-output", "-n", "my_ragbot", "streamlit", "run", "app/streamlit_app.py",
+                      "--server.port", "8501", "--server.headless", "true"],
+      "port": 8501
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+[project]
+name = "ragbot"
+version = "0.1.0"
+description = "RAG chatbot template: documents, tables and web, with routing, guardrails and golden-QA evaluation"
+requires-python = ">=3.11"
+dependencies = [
+  "kordoc>=0.2.0", "streamlit>=1.46", "pyyaml", "pandas", "numpy", "openpyxl",
+  "python-dotenv", "openai", "httpx", "ddgs", "beautifulsoup4",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+ragbot = "ragbot.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+markers = ["api: needs the LLM/embedding API (deselect with -m 'not api')", "engine: needs the kordoc Node engine"]

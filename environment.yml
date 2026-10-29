@@ -1,0 +1,9 @@
+# Python 3.11 + Node.js 20 을 conda 하나로 설치합니다 (Node 를 따로 설치할 필요 없음).
+# 파이썬 패키지는 requirements.lock 의 고정 버전으로 setup.sh / setup.ps1 이 설치합니다.
+name: my_ragbot
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - nodejs=20
+  - pip

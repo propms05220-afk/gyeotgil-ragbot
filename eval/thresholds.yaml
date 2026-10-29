@@ -1,0 +1,6 @@
+# `python -m ragbot eval` / `check` 의 최소 기준. docs/GOAL.md 의 목표 수치와 같아야 합니다.
+# 2026-10-29 팀이 정함 (docs/GOAL.md "성공 목표"). 실행을 통과시키려고 낮추지 마세요 (AGENTS.md 경계).
+accuracy: 0.80
+route_accuracy: 0.85
+by_route:
+  docs: 0.80

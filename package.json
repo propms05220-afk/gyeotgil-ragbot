@@ -1,0 +1,11 @@
+{
+  "name": "ragbot-engine",
+  "private": true,
+  "description": "Pins the kordoc document parsing engine used by the Python pipeline (see docs/decisions/0001-kordoc-parser.md)",
+  "dependencies": {
+    "kordoc": "^4.24.14"
+  },
+  "allowScripts": {
+    "onnxruntime-node@1.31.1": true
+  }
+}
